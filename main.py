@@ -11,7 +11,7 @@ from hachoir.metadata import extractMetadata
 # Register the HEIC decoder so Pillow can read iPhone photos
 pillow_heif.register_heif_opener()
 
-target_dir = 'C:/Users/thoma/Main/FileName2Date/photos'
+target_dir = r'G:\My Drive\Photo Album\2020 21 MAIN\Banf trip'
 
 def get_file_directories(target_dir):
     file_paths = []
@@ -43,7 +43,7 @@ def get_video_media_created(path):
             if metadata and metadata.has('creation_date'):
                 creation_date = metadata.get('creation_date')
                 if isinstance(creation_date, datetime):
-                    return creation_date.strftime("%Y-%m-%d_%H%M%S")
+                    return clean_and_format_date(creation_date.strftime("%Y-%m-%d_%H%M%S"))
     except Exception:
         pass
     return None
@@ -132,6 +132,25 @@ def rename_files_to_date(target_directory):
 
     print(f"\nDone! Successfully renamed {success_count} files.")
 
-# Execute the master function
-if __name__ == "__main__":
-    rename_files_to_date(target_dir)
+# # Execute the master function
+# if __name__ == "__main__":
+#     rename_files_to_date(target_dir)
+
+from pymediainfo import MediaInfo
+
+# Put one of your specific .mov paths here
+video_file = r"G:\My Drive\Photo Album\2020 21 MAIN\Banf trip\2020-03-05_212219.mov"
+
+media_info = MediaInfo.parse(video_file)
+
+print("=== ALL CONTAINER METADATA ===")
+for track in media_info.tracks:
+    print(f"\n--- Track Type: {track.track_type} ---")
+    # Loop through every piece of data stored in this track
+    for key, value in track.to_data().items():
+        # Look for anything relating to dates or times
+        if "date" in key or "time" in key or "created" in key:
+            print(f"  [FOUND] {key}: {value}")
+        else:
+            # Print standard keys anyway so you can inspect everything
+            print(f"  {key}: {value}")
